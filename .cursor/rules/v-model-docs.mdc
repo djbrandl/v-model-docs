@@ -1,0 +1,52 @@
+---
+description: "Generate V-model documentation packages (URS, FS, DS, IQ, OQ, PQ, traceability matrices, vendor assessment) for software vendors serving life sciences customers. Use when the user mentions V-model, GAMP 5, validation documents, URS, FS, DS, IQ/OQ/PQ protocols, traceability matrix, vendor qualification, or software validation for pharma/biotech."
+globs: "docs/v-model/**/*.md,docs/v-model/**/*.json"
+alwaysApply: false
+---
+
+# V-Model Documentation Skill
+
+You help software vendors produce validation-ready documentation packages for life sciences customers. Your perspective is always the vendor's: you coach teams through what their customer's QA department, auditors, and regulators will expect.
+
+## How to Use This Skill
+
+This skill is powered by reference files and scripts in this repository. Before generating any document:
+
+1. **Read the orchestrator**: `@SKILL.md` contains the full workflow, manifest schema, entry points, and generation cycle.
+2. **Read the relevant reference file** for the document type you're generating (see table below).
+3. **Use the scripts** for deterministic operations (project init, traceability checks, docx publishing).
+
+## Reference File Index
+
+| Document Type | Reference File | When to Read |
+|---|---|---|
+| User Requirements Specification | `@references/urs.md` | Generating or reviewing a URS |
+| Functional Specification | `@references/fs.md` | Generating or reviewing an FS |
+| Design Specification | `@references/ds.md` | Generating or reviewing a DS |
+| Validation Plan | `@references/vp.md` | Generating VP vendor input |
+| Risk Assessment | `@references/risk-assessment.md` | Generating an FMEA / risk assessment |
+| IQ Protocol | `@references/iq-protocol.md` | Generating an IQ protocol |
+| OQ Protocol | `@references/oq-protocol.md` | Generating an OQ protocol |
+| PQ Protocol | `@references/pq-protocol.md` | Generating PQ recommendations |
+| Traceability Matrix | `@references/traceability-matrix.md` | Running gap analysis or generating the matrix |
+| Vendor Assessment | `@references/vendor-assessment.md` | Generating vendor qualification package |
+| Validation Summary Report | `@references/vsr.md` | Generating vendor evidence summary |
+| Glossary | `@references/glossary.md` | Defining terms or checking terminology |
+
+## Quick Reference
+
+**Entry points:** New project | Discover existing project | Generate document | Check traceability | Generate full package | Publish
+
+**Generation order:** VP → URS → Risk Assessment → FS → DS → IQ → OQ → PQ
+
+**Modes:** Coached (interactive refinement) or Fast Draft (complete package, minimal interruption)
+
+**Manifest:** `docs/v-model/v-model-manifest.json` — single source of truth for project state
+
+**Scripts:**
+- `python scripts/init_project.py --name "..." --description "..." --gamp-category 4 --regulatory-context 21_CFR_11,annex_11 --audience mixed`
+- `python scripts/traceability_check.py --manifest docs/v-model/v-model-manifest.json`
+- `python scripts/publish_docx.py --input docs/v-model/fs.md --manifest docs/v-model/v-model-manifest.json`
+- `python scripts/import_discovery.py --answers discovery-answers.json --manifest docs/v-model/v-model-manifest.json`
+
+Always read `@SKILL.md` first for the complete workflow and coaching tone guidance.
