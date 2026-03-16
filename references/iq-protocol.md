@@ -273,6 +273,73 @@ Each step also has columns for Actual Result, Pass/Fail, Executed By, and Date (
 | 4 | Attempt login with default admin credentials | Login fails (default password changed) |
 | 5 | Verify no unexpected accounts beyond DS-6.1 | No extra accounts beyond DS-specified and system/service accounts |
 
+### Security Architecture Verification (IEC 62443)
+
+For OT/SCADA/ICS systems where the DS includes IEC 62443 security architecture, the following IQ test cases verify that the installed security controls match the DS zone/conduit model. Include these test cases when `regulatory_context` includes IEC 62443 or the system type is OT/SCADA/ICS.
+
+**IQ-SEC-001: Zone Boundary Verification**
+
+**Header:** `IQ-SEC-001 | Domain: Network + Security | DS Trace: DS Security Architecture (Zone/Conduit Model) | Priority: Critical`
+
+| Step | Action | Expected Result |
+|---|---|---|
+| 1 | Document the installed zone topology by capturing network diagrams, VLAN assignments, and firewall zone definitions | Zone topology matches DS zone/conduit design |
+| 2 | Export firewall rules for each zone boundary and compare against DS-specified allowed communication paths | Firewall rules enforce zone boundaries per DS |
+| 3 | Attempt cross-zone communication not specified in the DS (e.g., ping or connection attempt from enterprise zone to process control zone on non-permitted port) | Unauthorized cross-zone traffic is blocked |
+| 4 | Verify that blocked cross-zone attempts are logged by the firewall or network monitoring system | Rejected cross-zone traffic is logged with source, destination, port, and timestamp |
+
+**IQ-SEC-002: Security Level Verification**
+
+**Header:** `IQ-SEC-002 | Domain: Security | DS Trace: DS Security Architecture (Security Level Targets) | Priority: Critical`
+
+| Step | Action | Expected Result |
+|---|---|---|
+| 1 | For each zone, verify the authentication mechanism matches the target Security Level (SL-T): SL1 — single-factor; SL2 — multi-factor; SL3 — multi-factor + certificate; SL4 — multi-factor + hardware token | Authentication mechanism meets or exceeds SL-T per DS |
+| 2 | For each zone, verify authorization granularity matches SL-T requirements (role-based, attribute-based, or individual permissions) | Authorization granularity meets or exceeds SL-T per DS |
+| 3 | For each zone, verify audit logging depth matches SL-T requirements (event types logged, log retention, log protection) | Audit logging depth meets or exceeds SL-T per DS |
+| 4 | For each zone, verify encryption at rest and in transit matches SL-T requirements | Encryption controls meet or exceed SL-T per DS |
+
+**IQ-SEC-003: Conduit Protection Verification**
+
+**Header:** `IQ-SEC-003 | Domain: Network + Security | DS Trace: DS Interface Inventory Matrix | Priority: Critical`
+
+| Step | Action | Expected Result |
+|---|---|---|
+| 1 | For each cross-zone conduit defined in the DS Interface Inventory Matrix, verify protocol restrictions are enforced (only permitted protocols/ports allowed) | Protocol restrictions match DS specifications |
+| 2 | Verify encryption is enabled on each conduit as specified in the DS | Conduit encryption matches DS specifications |
+| 3 | Verify authentication is required for each conduit endpoint as specified in the DS | Conduit authentication matches DS specifications |
+| 4 | Verify data integrity checks are configured for each conduit as specified in the DS | Data integrity controls match DS specifications |
+| 5 | Verify logging is enabled for each conduit as specified in the DS | Conduit activity logging matches DS specifications |
+
+**IQ-SEC-004: OT-Specific Access Control**
+
+**Header:** `IQ-SEC-004 | Domain: Security | DS Trace: DS Security Architecture (OT Access Controls) | Priority: Critical`
+
+| Step | Action | Expected Result |
+|---|---|---|
+| 1 | Verify remote access to the OT environment is disabled or secured per DS specifications (VPN, jump host, or equivalent) | Remote access controls match DS security design |
+| 2 | Verify USB/portable media controls are configured per DS (disabled, whitelisted, or monitored) | Portable media controls match DS security design |
+| 3 | Verify wireless access controls are configured per DS (disabled, WPA3, 802.1X, or equivalent) | Wireless access controls match DS security design |
+| 4 | Verify physical access logging is configured per DS (if applicable — badge reader logs, camera system, access log) | Physical access logging matches DS security design (if applicable) |
+
+### EU GMP Annex 11 IQ Considerations
+
+For systems subject to EU GMP regulations, the IQ protocol must address the following Annex 11 clauses. These considerations ensure that the IQ evidence package supports Annex 11 compliance from the first qualification stage.
+
+**Clause 3 (Supplier/Service Provider):** IQ should verify that the installed system matches the vendor's specifications — version numbers, configuration files, and build checksums must match the Vendor Assessment deliverables. Record the vendor name, product version, and build identifier verified during IQ and cross-reference against the Vendor Assessment documentation.
+
+**Clause 4 (Validation):** IQ is the first qualification stage in the Annex 11 validation lifecycle — IQ evidence feeds into the Validation Summary Report. Ensure the IQ protocol's document ID, execution date, and outcome are structured to roll up into the VSR.
+
+**Clause 7.1 (Data Protection):** IQ must verify backup configuration — backup jobs scheduled, retention periods configured, restore capability verified. At minimum, verify that a backup job exists, runs on the DS-specified schedule, targets the DS-specified storage, and that a test restore produces a usable system state.
+
+**Clause 10 (Change and Configuration Management):** IQ must verify the installed configuration baseline — all configurable settings documented, checksums recorded, configuration management tool (if any) operational. This directly supports the Post-IQ Baseline Capture (Section 11) and provides the foundation for ongoing change control.
+
+**Clause 12 (Security):** IQ must verify security controls are installed correctly — user accounts configured per DS RBAC design, password policies enforced, session timeouts configured, failed login lockout configured. Each security control specified in the DS must have a corresponding IQ verification step with a binary pass/fail outcome.
+
+**Clause 16 (Business Continuity):** IQ must verify BC/DR infrastructure is in place — failover mechanisms configured, DR site reachable, monitoring alerts configured. Verify that the DR infrastructure exists and is reachable; functional DR testing (actual failover and recovery) is an OQ activity.
+
+> **Note:** IQ verifies that the system is INSTALLED correctly per the Design Specification. Annex 11 compliance at IQ focuses on infrastructure, configuration, and security foundations. Functional compliance (Clauses 5, 9, 14) is verified during OQ.
+
 ---
 
 ## 10. Deviation Handling

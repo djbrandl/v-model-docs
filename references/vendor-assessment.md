@@ -40,6 +40,39 @@ Customers send their own questionnaires, but 80% of the questions overlap. Maint
 
 **1.10 Regulatory Experience:** Number of regulated customers, standards familiarity (GAMP 5, 21 CFR Part 11, Annex 11), audit history and outcomes, and whether you provide validation support documentation.
 
+### Annex 11 Clause 3 Compliance
+
+For EU GMP-regulated customers, the supplier quality questionnaire must demonstrate compliance with EU GMP Annex 11 Clause 3 (Suppliers and Service Providers). This subsection maps Annex 11 Clause 3 requirements to vendor assessment evidence.
+
+**Annex 11 Clause 3 Requirements for Suppliers:**
+
+- **Clause 3.1:** "The competence and reliability of a supplier are key factors when selecting a product or service provider. The need for an audit should be based on a risk assessment."
+- **Clause 3.2:** "A quality agreement should exist between the contract giver and the contract acceptor, including clear documentation of responsibilities."
+- **Clause 3.3:** "For commercially available off-the-shelf products, a formal audit may not be necessary if a comprehensive quality assessment is performed through other means."
+- **Clause 3.4 (Service Providers):** "For cloud-hosted/outsourced services, the quality agreement must address data ownership, data availability, data integrity, confidentiality, and provisions for audit and inspection."
+
+**Vendor Assessment Evidence Mapping to Annex 11 Clause 3:**
+
+| Annex 11 Requirement | Vendor Assessment Section | Evidence Provided |
+|---|---|---|
+| Supplier competence (3.1) | QMS section, Development Lifecycle | ISO certifications, team qualifications, domain experience |
+| Formal agreement (3.2) | [Customer responsibility] | Quality agreement, SLA, master services agreement |
+| Audit alternative for COTS (3.3) | GAMP Category Justification | Category assessment, testing evidence, configuration documentation |
+| Cloud/hosted service provisions (3.4) | Data Integrity section, DR section | Data residency, SOC 2 Type II, backup/restore evidence, audit provisions |
+
+**Quality Agreement Checklist:**
+
+The vendor assessment should indicate which quality agreement provisions the vendor can support:
+
+- [ ] Data ownership remains with customer
+- [ ] Data available for export in open formats
+- [ ] Vendor supports customer audit rights
+- [ ] Incident notification within agreed timeframe
+- [ ] Change notification for GxP-impacting changes
+- [ ] Data segregation in multi-tenant environments
+- [ ] Defined data retention and destruction policies
+- [ ] Compliance with applicable data protection regulations (GDPR, etc.)
+
 ---
 
 ## Document 2: GAMP Category Justification

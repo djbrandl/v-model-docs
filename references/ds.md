@@ -245,14 +245,22 @@ implement business logic, GAMP 5 if custom extensions are developed.
 
 Single source of truth for integration scope. Directly drives IQ interface verification.
 
-| ID | Name | Source | Destination | Protocol | Format | Direction | Auth | Frequency | GxP Critical | FS Trace | DS Section |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| IF-001 | Patient Import | EMR | App API | REST/HTTPS | HL7 FHIR | Inbound | OAuth 2.0 | Real-time | Yes | FS-012 | 4.1 |
-| IF-002 | Report Export | App | File Share | SFTP | PDF | Outbound | Key-based | On-demand | Yes | FS-015 | 4.1 |
+| ID | Name | Source | Destination | Protocol | Format | Direction | Auth | Frequency | GxP Critical | Source Zone | Destination Zone | Conduit SL | FS Trace | DS Section |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| IF-001 | Patient Import | EMR | App API | REST/HTTPS | HL7 FHIR | Inbound | OAuth 2.0 | Real-time | Yes | Zone 4 — Enterprise | Zone 4 — Enterprise | N/A — same zone | FS-012 | 4.1 |
+| IF-002 | Report Export | App | File Share | SFTP | PDF | Outbound | Key-based | On-demand | Yes | Zone 4 — Enterprise | Zone 3 — Process Control | SL-2 | FS-015 | 4.1 |
 
 **GxP Critical = Yes** means the interface carries regulated data or controls a regulated
 process. These require dedicated IQ test cases for connectivity, data integrity, error handling,
 and timeout behavior.
+
+**Zone and Security Level columns** (Source Zone, Destination Zone, Conduit SL) are required
+when `regulatory_context` includes IEC 62443 or the system type is OT/SCADA. Zone designations
+follow IEC 62443 zone definitions (e.g., Zone 1 — Safety, Zone 2 — Basic Control, Zone 3 —
+Process Control, Zone 4 — Enterprise, Zone 5 — DMZ/External). Conduit SL specifies the
+required Security Level target (SL-T) for communication between zones per IEC 62443, ranging
+from SL 1 (basic) to SL 4 (state-sponsored threat). For IT-only systems, these columns may
+be marked N/A.
 
 ---
 
@@ -286,9 +294,12 @@ When Part 11 applies, the DS must map each requirement to its design mechanism.
 | 11.10(c) | Record protection | RBAC + encryption + backup | 6.2, 6.5, 8.3 |
 | 11.10(d) | Access limited to authorized | Authentication + RBAC | 6.1, 6.2 |
 | 11.10(e) | Audit trail | Secure, computer-generated, timestamped | 6.3 |
+| 11.10(f) | Operational system checks | Workflow engine design, state machine enforcement, business rule validation | 3.x, 6.2 |
 | 11.10(g) | Authority checks | Permission matrix, segregation of duties | 6.2 |
 | 11.10(h) | Device checks | Input validation, checksums, referential integrity | 3.x, 5.2 |
+| 11.10(i) | Training | Policies to hold individuals accountable for actions under e-signatures — vendor provides training documentation and system help; customer owns procedural compliance | Vendor Assessment |
 | 11.10(k) | Documentation controls | Version control, change control | 9.3, 9.4 |
+| 11.30 | Open system controls | All 11.10 controls plus encryption of records, digital signatures, and standards body controls for systems where content owners do not control access | 6.5, 6.6 |
 | 11.50 | Signature manifestations | Signer name, date/time, meaning displayed | 6.4 |
 | 11.70 | Signature/record linking | Cryptographic binding | 6.4 |
 | 11.100 | E-sig general requirements | Unique, not reused, not reassigned | 6.1, 6.4 |
@@ -298,6 +309,46 @@ When Part 11 applies, the DS must map each requirement to its design mechanism.
 **Coaching:** Not every system requires full Part 11. State which sections apply based on
 intended use. Over-claiming creates unnecessary testing burden; under-claiming creates audit
 risk.
+
+**Open vs Closed Systems (11.10 / 11.30):** A system is "open" when persons who are
+responsible for the content of electronic records do not control access to the system.
+Cloud/SaaS deployments where the customer does not control the infrastructure are typically
+open systems. For cloud/SaaS deployments, determine whether the system is closed or open per
+Part 11 definitions. If open, additional controls (encryption, digital signatures, standards
+certification) apply per Section 11.30. The shared responsibility model determines where
+these controls are implemented.
+
+---
+
+## EU GMP Annex 11 Design Compliance Matrix
+
+When the system operates within EU GMP scope, Annex 11 requirements must be mapped alongside
+21 CFR Part 11. The two frameworks overlap significantly but Annex 11 introduces additional
+lifecycle, supplier, and business continuity requirements.
+
+| Annex 11 Clause | Requirement Summary | DS Design Mechanism | DS Section Reference |
+|---|---|---|---|
+| Clause 1 (Risk Management) | Risk-based approach to computerised system lifecycle | Risk assessment drives design decisions | Risk Assessment, DS Sections 7–8 |
+| Clause 3 (Supplier/Service Provider) | Supplier competence and quality system | Vendor QMS, development lifecycle documentation | Vendor Assessment |
+| Clause 3.4 (Service Providers/Cloud) | Cloud service provider qualification | SLA definitions, data residency, shared responsibility model | DS Section 4 (Interfaces) |
+| Clause 4 (Validation) | Life cycle approach, validation report | V-model lifecycle with full traceability | VP, VSR |
+| Clause 5 (Data) | Accuracy checks on data entry | Input validation, business rules, error handling | DS Section 3 (Component Design) |
+| Clause 7 (Data Storage) | Damage protection, accessibility, readability | Backup architecture, data format standards, retention design | DS Section 5 (Data Design) |
+| Clause 7.1 (Data Protection) | Regular backups, verified restore | Backup jobs, restore testing, RPO/RTO targets | DS Section 8 (Reliability) |
+| Clause 8 (Printouts) | Clear indication if data changed since last print | Print timestamp, version marking | DS Section 3 |
+| Clause 9 (Audit Trails) | Risk-based audit trail configuration | Audit trail design per data criticality | DS Section 6 (Security) |
+| Clause 10 (Change and Configuration Management) | Change control procedures | Configuration management design, version control | DS Section 9 |
+| Clause 11 (Periodic Evaluation) | Periodic evaluation mechanism | System health monitoring, compliance dashboard | DS Section 7 (Performance) |
+| Clause 12 (Security) | Physical and logical access controls | Authentication, authorization, session management | DS Section 6 |
+| Clause 13 (Incident Management) | Incident reporting and assessment | Error logging, alerting, incident workflow | DS Section 3 |
+| Clause 14 (Electronic Signature) | Link between signature and record | E-signature binding, non-repudiation | DS Section 6 |
+| Clause 16 (Business Continuity) | Alternative arrangements for system breakdown | Failover architecture, disaster recovery | DS Section 8 |
+| Clause 17 (Archiving) | Data archival with verified retrieval | Archive format, migration strategy, retrieval verification | DS Section 5 |
+
+**Coaching:** Systems subject to both FDA and EU regulation must address both Part 11 and
+Annex 11. Where requirements overlap, a single design mechanism may satisfy both. Where they
+diverge (e.g., Annex 11 Clause 3 supplier requirements, Clause 16 business continuity),
+separate design treatment is needed.
 
 ---
 
@@ -355,6 +406,89 @@ is an orphan.
 - Blinding mechanisms with documented unblinding controls
 - Data design supports CDISC standards (CDASH, SDTM)
 - Audit trail supports full trial data history reconstruction
+
+---
+
+## Cloud and SaaS Considerations (GAMP 5 Appendix D7)
+
+When the system is deployed as cloud (IaaS/PaaS) or SaaS, the DS must address the additional
+considerations from GAMP 5 2nd Edition Appendix D7. These supplement — not replace — the
+standard DS sections above.
+
+### Shared Responsibility Model
+
+Document the division of responsibilities between the cloud provider, application vendor, and
+customer. The responsibility assignment directly affects validation scope — the customer must
+validate what they control and verify supplier controls for what they do not.
+
+| Responsibility Area | Cloud Provider (IaaS/PaaS) | Application Vendor (SaaS) | Customer |
+|---|---|---|---|
+| Infrastructure qualification | Owns — provides compliance certifications | Relies on cloud provider | Verifies certifications |
+| OS patching | Owns (PaaS) or shared (IaaS) | Owns | Verifies patching cadence |
+| Application deployment | Provides platform | Owns — deploys and maintains | Validates release process |
+| Data backup | Provides infrastructure/tools | Configures and executes | Verifies backup adequacy and restore testing |
+| Access management | Identity platform primitives | Application-level RBAC | Owns user provisioning, role assignment, periodic review |
+| Audit logging | Infrastructure-level logs | Application audit trail | Owns retention policy, review, and archival |
+| Network security | VPC, security groups, DDoS | Application firewall, API gateway | Defines requirements, verifies implementation |
+| Disaster recovery | Regional redundancy, failover infra | DR configuration, RTO/RPO adherence | Owns DR plan, participates in DR testing |
+| Data residency | Provides region selection | Configures per customer requirement | Defines regulatory requirements, verifies compliance |
+
+### Service Level Agreements
+
+The DS must document SLA requirements that drive reliability and availability design:
+
+- **Availability target:** e.g., 99.9% uptime (excludes scheduled maintenance windows)
+- **Recovery Point Objective (RPO):** Maximum acceptable data loss (e.g., 1 hour)
+- **Recovery Time Objective (RTO):** Maximum acceptable downtime (e.g., 4 hours)
+- **Support response times:** Severity-based (e.g., Sev-1: 15 min response, 4 hr resolution)
+- **Incident notification timeframes:** Time from detection to customer notification (e.g., 1 hour for data breach, 4 hours for service degradation)
+
+SLA metrics must be measurable and map to DS Section 8 (Reliability and Availability) design
+mechanisms. The DS should specify how SLA compliance is monitored and reported.
+
+### Data Residency and Sovereignty
+
+Identify where data is stored, processed, and backed up at each tier:
+
+- **Primary storage:** Geographic region and specific data center (where known)
+- **Backup/DR storage:** Geographic region for replicas and backups
+- **Processing location:** Where compute operations on the data occur
+- **Transit paths:** Data routing between regions or providers
+
+Map each data location to applicable regulatory requirements: EU GDPR data residency
+(adequacy decisions, Standard Contractual Clauses), country-specific data localization laws,
+and sector-specific requirements (e.g., China PIPL, Russia Federal Law 242-FZ). Document any
+restrictions on cross-border data transfer and the legal mechanisms enabling permitted
+transfers.
+
+### Multi-Tenancy Considerations
+
+If the system uses a multi-tenant architecture, document tenant isolation mechanisms across
+all layers:
+
+- **Data isolation:** Separate databases, shared database with tenant-scoped schemas, or row-level tenant filtering. Specify how cross-tenant data leakage is prevented and verified.
+- **Compute isolation:** Shared application instances with tenant context, dedicated containers, or dedicated VM instances. Document resource limits and noisy-neighbor protections.
+- **Network isolation:** Virtual network segmentation, tenant-specific endpoints, or shared endpoints with tenant routing. Specify how network-level cross-tenant access is prevented.
+
+For GxP systems, multi-tenancy isolation must be verifiable during IQ and documented in the
+security design (DS Section 6).
+
+### Cloud Provider Qualification
+
+Reference the cloud provider's compliance certifications and map them to validation
+requirements:
+
+- **SOC 2 Type II:** Covers security, availability, processing integrity, confidentiality, and privacy controls. Map relevant trust service criteria to DS design mechanisms.
+- **ISO 27001:** Information security management system certification. Reference applicable controls from Annex A.
+- **FedRAMP:** For US federal or regulated workloads. Identify authorization level (Low, Moderate, High).
+- **GxP-specific certifications:** AWS GxP compliance packages, Azure Life Sciences compliance, GCP healthcare compliance. Reference specific whitepapers and attestations.
+
+**Important:** Cloud provider certifications supplement but do not replace customer validation
+responsibilities. Certifications demonstrate that the provider's environment is qualified, but
+the customer must still validate the application layer, configuration, data integrity, and
+business processes running on that infrastructure. The DS should reference specific
+certification report IDs and review dates, and the validation plan should include periodic
+re-review of provider certifications.
 
 ---
 

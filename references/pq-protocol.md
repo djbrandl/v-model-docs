@@ -167,6 +167,70 @@ PQ scenarios must represent complete business workflows. Use this 5-step process
 
 **Acceptance criteria:** Mean response times within URS thresholds. P95 does not exceed specification. No degradation trend across executions. Zero timeouts or failures under load.
 
+### 6.4 Alarm Management Performance Scenarios (ISA-18.2)
+
+The following scenarios verify alarm system performance under real production conditions per ISA-18.2 and EEMUA 191 benchmarks. These apply when the URS defines alarm management requirements. Unlike OQ alarm test cases (which verify individual alarm functions), PQ alarm scenarios assess operational performance with real operators, real process conditions, and sustained production workflows.
+
+#### PQ-ALM-001: Steady-State Alarm Rate
+
+**Traces to:** URS alarm management requirements | **Consecutive Executions:** 3 (shifts)
+
+| Step | Action | Expected Result |
+|---|---|---|
+| 1 | Configure alarm historian to log all alarms during monitoring period | Historian logging confirmed; baseline timestamp recorded |
+| 2 | Monitor alarm system during 3 consecutive production shifts under normal operations | All alarms recorded with timestamps, priority, and operator position |
+| 3 | Calculate average alarm rate per operator position per shift | Average alarm rate documented per position per shift |
+| 4 | Calculate peak alarm rate (highest 10-minute window) per shift | Peak alarm rate documented per shift |
+| 5 | Compare rates against EEMUA 191 targets | Results compared to acceptance criteria |
+
+**Acceptance criteria:** Average alarm rate ≤1 alarm per 10 minutes per operator position (EEMUA 191 "manageable" target). Peak alarm rate documented for trend analysis.
+**Record:** Total alarms, alarm rate per shift, peak alarm rate.
+
+#### PQ-ALM-002: Standing Alarm Count
+
+**Traces to:** URS alarm management requirements | **Consecutive Executions:** 3 (shifts)
+
+| Step | Action | Expected Result |
+|---|---|---|
+| 1 | Audit standing alarm list at start of production shift | Standing alarm count and tag list documented |
+| 2 | Audit standing alarm list at end of production shift | Standing alarm count and tag list documented |
+| 3 | Repeat for 3 consecutive shifts | Standing alarm data collected for all shifts |
+| 4 | Identify any standing alarms >24 hours | Alarm tag and age documented for each standing alarm >24h |
+| 5 | Identify any standing alarms >7 days | Alarm tag, age, and justification status documented |
+
+**Acceptance criteria:** ≤5 standing alarms per operator position; no standing alarms >7 days without documented justification.
+**Record:** Standing alarm count per shift, alarm tag and age for any alarms >24h.
+
+#### PQ-ALM-003: Alarm Flood Response
+
+**Traces to:** URS alarm management and operator response requirements | **Consecutive Executions:** 1 (per planned upset event)
+
+| Step | Action | Expected Result |
+|---|---|---|
+| 1 | During a planned process upset or startup/shutdown, monitor alarm rate | Alarm rate recorded per minute throughout event |
+| 2 | Record operator response to safety-critical alarms | Response times documented for each safety-critical alarm |
+| 3 | Verify all alarms logged in historian | No alarm data loss; all alarms recorded with correct timestamps |
+| 4 | Measure flood duration (time from first alarm exceeding threshold to return to manageable rate) | Flood duration documented |
+| 5 | Verify HMI and alarm summary remained accessible during flood | Operator confirms alarm summary and HMI navigation functional throughout |
+
+**Acceptance criteria:** All safety-critical alarms acknowledged within documented response time; no alarm data loss during flood; flood duration <30 minutes.
+**Record:** Peak alarm rate, flood duration, safety-critical alarm response times.
+
+#### PQ-ALM-004: Nuisance Alarm Rate
+
+**Traces to:** URS alarm management requirements | **Consecutive Executions:** 1 (analysis period: 3+ production days)
+
+| Step | Action | Expected Result |
+|---|---|---|
+| 1 | Extract alarm historian data for 3+ consecutive production days | Complete alarm dataset exported with tag, timestamp, priority, and state |
+| 2 | Identify chattering alarms (>3 activations per minute for any alarm point) | Chattering alarm tags and frequency documented |
+| 3 | Identify repeat offenders (top 10 most frequent alarm tags) | Top 10 alarm tags listed with activation count and percentage of total |
+| 4 | Calculate nuisance alarm percentage of total alarm count | Nuisance alarm count and percentage documented |
+| 5 | Review results against acceptance criteria | Comparison documented; any exceedances flagged |
+
+**Acceptance criteria:** Nuisance alarms <5% of total alarm count; no single alarm point chattering >3 times/min for >1 hour.
+**Record:** Total alarm count, nuisance alarm count, percentage, top 10 most frequent alarms.
+
 ---
 
 ## 7. Performance Criteria Categories
@@ -374,3 +438,19 @@ Consecutive Runs:   [Number required]
 ```
 
 Each PQ item must trace to at least one URS requirement. Orphan PQ items are flagged as informational gaps by the traceability engine.
+
+### EU GMP Annex 11 PQ Considerations
+
+For systems subject to EU GMP, PQ must address the following Annex 11 clauses. These requirements are tested at the production-environment, workflow level — complementing the function-level verification performed during OQ.
+
+**Clause 4 — Validation:** PQ is the final stage of the validation lifecycle per Annex 11. The PQ report feeds directly into the customer's Validation Summary Report (VSR). PQ must demonstrate the system performs consistently in the production environment with real users and real data — not merely that individual functions work correctly (which is OQ's scope). PQ evidence should be structured to support the VSR conclusion that the system is fit for its intended use.
+
+**Clause 7 — Data Storage:** PQ should include scenarios that verify data remains accessible, readable, and intact throughout the declared retention period. Test cases should cover: data retrieval from archive — verify that archived records can be retrieved and displayed correctly; readability of archived records — verify that records stored for the declared retention period remain readable and complete; and backup restore — verify that a restored backup produces data identical to the original, with no corruption or loss. Include at least one scenario that retrieves data archived at a representative age (e.g., oldest available archive) and confirms readability.
+
+**Clause 11 — Periodic Evaluation:** PQ results establish the baseline for periodic evaluation per Annex 11 Clause 11. Document baseline performance metrics — including response times, alarm rates, error rates, and data integrity indicators — that will be monitored during periodic reviews. These metrics provide the quantitative foundation against which future system performance is compared.
+
+> **Baseline note:** PQ acceptance criteria should be designed to serve as the benchmark for subsequent periodic evaluations. Where PQ measures a quantitative metric (response time, alarm rate, throughput), record the baseline value alongside the acceptance threshold so that periodic reviews can detect degradation trends.
+
+**Clause 16 — Business Continuity:** PQ should include production environment scenarios that verify business continuity arrangements under real operating conditions. Test cases should cover: failover in production — verify that the system switches to backup infrastructure without data loss or user disruption; data integrity after recovery — verify that recovered data matches pre-failure state with no corruption; and SLA compliance during degraded operations — verify that critical workflows remain available within documented service level targets during degraded mode.
+
+> **PQ scope note:** PQ tests system performance in the production environment with real workflows. For Annex 11 compliance, PQ evidence must demonstrate that the system consistently meets its intended use under actual operating conditions — not just that individual functions work correctly (which is OQ's scope).

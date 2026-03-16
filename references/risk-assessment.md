@@ -56,6 +56,11 @@ Brief system overview drawn from the VP system description section or discovery 
 
 State the methodology (FMEA), the scoring scales (Section 4), the classification thresholds (Section 6), and the decision rules for risk-to-testing mapping (Section 7). An auditor must be able to reproduce your risk classification from the documented methodology alone.
 
+**EU GMP Annex 11 Considerations:**
+
+- For EU GMP-regulated systems, Annex 11 Clause 1 explicitly requires risk management throughout the computerised system lifecycle. The risk assessment methodology and results should be documented to demonstrate compliance with this clause.
+- Risk-based decisions (e.g., which data elements to audit trail, which test cases to automate vs. manual) must be documented and defensible per Annex 11 Clause 9's risk-based approach.
+
 ### 3.5 Risk Classification Criteria
 
 The severity, occurrence, and detectability scales with pharma-relevant definitions (Section 4).
@@ -161,6 +166,33 @@ The discovery report provides a component inventory with GAMP category assignmen
 6. Present the pre-seeded table to the vendor team for review, refinement, and completion
 
 > **Coaching:** "Pre-seeded failure modes are starting points, not final answers. The team must review every row, adjust scores, add failure modes the template missed, and remove any that do not apply. A risk assessment that looks exactly like the template is a risk assessment that was not actually performed."
+
+### OT / IEC 62443 Pre-Seeded Failure Modes
+
+**When to apply:** When `regulatory_context` includes IEC 62443 or system type is OT/SCADA/ICS.
+
+For Operational Technology environments, the standard GAMP-category-based pre-seeding must be supplemented with OT-specific failure modes that address cybersecurity risks at zone and conduit boundaries. These failure modes reflect the unique threat landscape of industrial control systems where cyber-physical consequences are possible.
+
+**Pre-seeded failure modes for OT systems:**
+
+| ID | Function/Component | Failure Mode | Potential Effect | IEC 62443 Reference |
+|---|---|---|---|---|
+| RA-OT-001 | Network segmentation | Unauthorized access from enterprise zone to process control zone | Unauthorized process modification, potential safety impact | IEC 62443-3-3 SR 5.1 (Network Segmentation) |
+| RA-OT-002 | Remote access | Unauthorized remote access to OT network | Process manipulation, data exfiltration, safety impact | IEC 62443-3-3 SR 1.13 (Access via untrusted networks) |
+| RA-OT-003 | Malware propagation | Malware spreads from IT to OT via shared services | System downtime, process disruption, data corruption | IEC 62443-3-3 SR 3.2 (Malicious code protection) |
+| RA-OT-004 | Denial of service | Network flood or resource exhaustion on OT network | Loss of control visibility, delayed operator response | IEC 62443-3-3 SR 7.1 (Denial of service protection) |
+| RA-OT-005 | Safety system interaction | Validated system interferes with Safety Instrumented System (SIS) | Compromised safety function, potential patient/product harm | IEC 62443-3-3 SR 5.2 (Zone boundary protection) |
+| RA-OT-006 | Patch management | Delayed or untested security patch on OT system | Known vulnerability exploited, system compromise | IEC 62443-2-3 (Patch management) |
+| RA-OT-007 | Historian data integrity | Unauthorized modification of historian records | Falsified batch/process records, compliance violation | IEC 62443-3-3 SR 3.4 (Software and information integrity) |
+| RA-OT-008 | Time synchronization | NTP/PTP failure or manipulation | Incorrect timestamps on GxP records, broken audit trail sequencing | IEC 62443-3-3 SR 7.7 (Least functionality) |
+| RA-OT-009 | Portable media | Unauthorized USB/portable media introduced to OT environment | Malware introduction, data exfiltration | IEC 62443-3-3 SR 2.3 (Use control for portable/mobile devices) |
+| RA-OT-010 | Wireless access | Unauthorized wireless access point in OT environment | Network intrusion, process manipulation | IEC 62443-3-3 SR 1.6 (Wireless access management) |
+
+**OT-Specific Detectability Considerations:**
+- Many OT systems lack centralized security monitoring (SIEM) — detectability scores should reflect this
+- Real-time process data may mask slow-acting attacks — consider "low and slow" detection difficulty
+- OT protocol analysis (Modbus, OPC-UA, EtherNet/IP) may not be part of standard monitoring — score detectability accordingly
+- Physical indicators (unexpected process behavior) may be the primary detection mechanism — factor operator vigilance into detectability
 
 ---
 

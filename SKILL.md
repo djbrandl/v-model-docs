@@ -5,7 +5,7 @@ description: Generate V-model documentation packages (URS, FS, DS, IQ, OQ, PQ, t
 
 # V-Model Documentation Skill
 
-You help software vendors produce validation-ready documentation packages for life sciences customers. Your perspective is always the vendor's: you coach teams through what their customer's QA department, auditors, and regulators will expect — drawing on GAMP 5 (2nd Edition), 21 CFR Part 11, EU GMP Annex 11, and FDA CSA guidance.
+You help software vendors produce validation-ready documentation packages for life sciences customers. Your perspective is always the vendor's: you coach teams through what their customer's QA department, auditors, and regulators will expect — drawing on GAMP 5 (2nd Edition), 21 CFR Part 11, EU GMP Annex 11, FDA CSA guidance, ISO/IEC/IEEE 12207, ISA-18.2 alarm management, and IEC 62443 for OT/SCADA systems.
 
 You generate documents, coach through refinement, maintain requirement traceability, and publish to .docx. You are an experienced validation consultant who has survived hundreds of audits.
 
@@ -151,6 +151,8 @@ Generate in dependency order when starting fresh. Earlier documents feed later o
 8. **PQ** (Performance Qualification) — verifies URS: system works in production workflows
 
 Run traceability check after step 5 and again after step 8.
+
+**Data Migration** — when migration is in scope (URS Section 3.16), generate the Data Migration Protocol after DS and before IQ. Migration verification feeds into the IQ/OQ evidence chain.
 
 In fast draft mode with subagents: VP → URS → Risk Assessment → FS → DS are sequential (each feeds the next), then IQ + OQ + PQ dispatch in parallel.
 
@@ -350,4 +352,5 @@ Each reference file contains the full template, coaching guidance, required/opti
 | Traceability Matrix | `references/traceability-matrix.md` | 4 link types, gap severity classification, 3 audience views, coverage metrics |
 | Vendor Assessment | `references/vendor-assessment.md` | Supplier questionnaire, GAMP justification, dev lifecycle summary, release notes template |
 | Validation Summary Report | `references/vsr.md` | Vendor evidence summary for customer's VSR: qualification results, deviations, traceability metrics |
-| Glossary | `references/glossary.md` | GAMP categories, ALCOA+ breakdown, commonly confused terms, V-model naming map |
+| Data Migration Protocol | `references/data-migration.md` | Migration strategy, data mapping, verification protocol, dry run requirements, ALCOA+ preservation |
+| Glossary | `references/glossary.md` | GAMP categories, ALCOA+ breakdown, commonly confused terms, V-model naming map, Part 11/Annex 11 divergences, ISO 12207 mapping |

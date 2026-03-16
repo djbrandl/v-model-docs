@@ -169,6 +169,130 @@ Step-level detail is mandatory. An executor who has never seen the system must f
 
 **Step writing rules:** One action per step. Name every UI element explicitly. Specify exact values, never "a valid value." State the observable outcome, not "system confirms." Include navigation from a known location. Number sequentially — no sub-steps.
 
+### 5.1 Alarm System Verification Test Cases (ISA-18.2)
+
+The following test cases verify alarm management functionality per ISA-18.2 / IEC 62682. These cases apply when the FS defines alarm setpoints, priorities, shelving, suppression, or flood-handling behavior. Each test case follows the format in Section 5.
+
+#### Test Case OQ-ALM-001: Alarm Generation at Setpoint Boundaries
+
+**Traces to:** FS alarm setpoint requirements
+**Risk Level:** High
+**Technique(s):** Boundary Value Analysis (BVA)
+**Prerequisites:** Alarm setpoints configured per FS; process variable simulator available
+**Test Data:** Setpoint value, deadband value from alarm configuration
+
+| Step | Action | Expected Result | Actual Result | Pass/Fail | Executed By | Date |
+|---|---|---|---|---|---|---|
+| 1 | Drive process variable to setpoint - 1 | Alarm does not activate; no annunciation | | | | |
+| 2 | Drive process variable to setpoint | Alarm activates; annunciation displayed with correct priority color/symbol and timestamp | | | | |
+| 3 | Drive process variable to setpoint + 1 | Alarm remains active; no duplicate alarm generated | | | | |
+| 4 | Return process variable to setpoint - deadband + 1 | Alarm remains active (within deadband) | | | | |
+| 5 | Return process variable below setpoint - deadband | Alarm returns to normal (RTN); RTN timestamp recorded | | | | |
+
+**Evidence:** Screenshot of alarm banner at each step; alarm historian log entries
+**Deviation(s):** {ID or "None"}
+**Overall Result:** Pass / Fail
+
+#### Test Case OQ-ALM-002: Alarm Priority Routing
+
+**Traces to:** FS alarm priority and routing requirements
+**Risk Level:** High
+**Technique(s):** Equivalence Partitioning
+**Prerequisites:** Alarm philosophy document approved; operator positions configured; audible annunciation hardware available
+**Test Data:** One alarm tag per priority level (Emergency, High, Medium, Low)
+
+| Step | Action | Expected Result | Actual Result | Pass/Fail | Executed By | Date |
+|---|---|---|---|---|---|---|
+| 1 | Generate Emergency priority alarm | Alarm displays with Emergency color/symbol per alarm philosophy; audible pattern matches Emergency annunciation; operator notification sent to designated position | | | | |
+| 2 | Generate High priority alarm | Alarm displays with High color/symbol per alarm philosophy; audible pattern matches High annunciation; operator notification sent to designated position | | | | |
+| 3 | Generate Medium priority alarm | Alarm displays with Medium color/symbol per alarm philosophy; audible pattern matches Medium annunciation; operator notification per alarm philosophy | | | | |
+| 4 | Generate Low priority alarm | Alarm displays with Low color/symbol per alarm philosophy; audible pattern matches Low annunciation; operator notification per alarm philosophy | | | | |
+| 5 | Verify alarm summary display | All four alarms appear in alarm summary with correct priority indicators, timestamps, and tag descriptions | | | | |
+
+**Evidence:** Screenshot of each alarm annunciation; screenshot of alarm summary; audio confirmation log (if applicable)
+**Deviation(s):** {ID or "None"}
+**Overall Result:** Pass / Fail
+
+#### Test Case OQ-ALM-003: Alarm Shelving Duration Limits
+
+**Traces to:** FS alarm shelving requirements
+**Risk Level:** High
+**Technique(s):** State Transition Testing
+**Prerequisites:** Alarm shelving function enabled; maximum shelve duration configured per FS
+**Test Data:** Active alarm tag; configured maximum shelve duration value
+
+| Step | Action | Expected Result | Actual Result | Pass/Fail | Executed By | Date |
+|---|---|---|---|---|---|---|
+| 1 | Generate an active alarm | Alarm activates and annunciates normally | | | | |
+| 2 | Shelve the active alarm | Alarm suppressed from annunciation; shelve action recorded in audit trail with user ID, timestamp, and alarm tag | | | | |
+| 3 | Verify alarm status during shelve period | Alarm shows "Shelved" status in alarm summary; no annunciation during shelve period | | | | |
+| 4 | Wait for maximum shelve duration to elapse | Alarm re-appears with active annunciation; re-notification generated to operator position | | | | |
+| 5 | Verify audit trail | Shelve action, shelve duration, and automatic unshelve event recorded with timestamps | | | | |
+
+**Evidence:** Screenshot of shelved alarm status; screenshot of re-activated alarm; audit trail extract
+**Deviation(s):** {ID or "None"}
+**Overall Result:** Pass / Fail
+
+#### Test Case OQ-ALM-004: Alarm Suppression Logic
+
+**Traces to:** FS state-based alarm suppression requirements
+**Risk Level:** High
+**Technique(s):** State Transition Testing
+**Prerequisites:** State-based suppression rules configured per FS; ability to change system operating state
+**Test Data:** Alarm tag with state-based suppression rule; system states where alarm is suppressed and active
+
+| Step | Action | Expected Result | Actual Result | Pass/Fail | Executed By | Date |
+|---|---|---|---|---|---|---|
+| 1 | Place system in state where alarm is configured as suppressed | System state change confirmed | | | | |
+| 2 | Drive process variable to alarm setpoint | Alarm does not annunciate; suppression status visible in alarm summary | | | | |
+| 3 | Verify audit trail for suppression | Suppression event logged with system state, alarm tag, user ID, and timestamp | | | | |
+| 4 | Change system to state where alarm is active | System state change confirmed | | | | |
+| 5 | Verify alarm annunciates in active state | Alarm activates and annunciates normally; unsuppression event logged in audit trail | | | | |
+
+**Evidence:** Screenshot of suppressed alarm status; screenshot of active alarm annunciation; audit trail extract showing suppression/unsuppression events
+**Deviation(s):** {ID or "None"}
+**Overall Result:** Pass / Fail
+
+#### Test Case OQ-ALM-005: Concurrent Alarm Handling (Alarm Flood)
+
+**Traces to:** FS alarm flood handling requirements
+**Risk Level:** High
+**Technique(s):** Negative Testing, Error Recovery
+**Prerequisites:** Alarm flood scenario defined; >10 alarm tags available for simultaneous triggering; HMI response time measurement tool available
+**Test Data:** Alarm flood scenario triggering >10 alarms in <10 minutes
+
+| Step | Action | Expected Result | Actual Result | Pass/Fail | Executed By | Date |
+|---|---|---|---|---|---|---|
+| 1 | Trigger alarm flood scenario (>10 alarms in <10 minutes) | All alarms generated and logged in alarm historian with correct timestamps | | | | |
+| 2 | Verify alarm historian completeness | All triggered alarms recorded; no alarm data loss; timestamps sequential and accurate | | | | |
+| 3 | Verify HMI responsiveness during flood | HMI response time <2 seconds; operator can navigate screens without degradation | | | | |
+| 4 | Verify alarm summary accessibility | Alarm summary displays all active alarms; sorting and filtering functions operational | | | | |
+| 5 | Verify alarm flood indicator | Flood indicator activates per alarm philosophy when alarm rate exceeds configured threshold | | | | |
+
+**Evidence:** Alarm historian export showing all triggered alarms; HMI response time measurements; screenshot of alarm summary during flood; screenshot of flood indicator
+**Deviation(s):** {ID or "None"}
+**Overall Result:** Pass / Fail
+
+#### Test Case OQ-ALM-006: Alarm Acknowledgment Workflow
+
+**Traces to:** FS alarm acknowledgment requirements
+**Risk Level:** High
+**Technique(s):** Negative Testing, State Transition Testing
+**Prerequisites:** Alarm acknowledgment rules configured per FS; authorized and unauthorized user accounts available
+**Test Data:** Active alarm tag; authorized user credentials; unauthorized user credentials
+
+| Step | Action | Expected Result | Actual Result | Pass/Fail | Executed By | Date |
+|---|---|---|---|---|---|---|
+| 1 | Generate an active alarm | Alarm activates and annunciates normally | | | | |
+| 2 | Attempt acknowledgment by unauthorized user | Acknowledgment rejected; alarm remains unacknowledged; rejection event logged | | | | |
+| 3 | Attempt acknowledgment by authorized user | Acknowledgment accepted; alarm visual state changes to acknowledged | | | | |
+| 4 | Verify audit trail for acknowledgment | Acknowledging user, timestamp, and alarm state (unacknowledged to acknowledged) recorded in audit trail | | | | |
+| 5 | Verify alarm remains visible until RTN | Acknowledged alarm remains in alarm summary until process variable returns to normal | | | | |
+
+**Evidence:** Screenshot of rejected acknowledgment attempt; screenshot of successful acknowledgment; audit trail extract
+**Deviation(s):** {ID or "None"}
+**Overall Result:** Pass / Fail
+
 ---
 
 ## 6. Expected Result Quality
@@ -415,3 +539,19 @@ Under FDA CSA guidance (September 2025), OQ testing is risk-stratified:
 - **Low risk (no direct GxP):** Unscripted acceptable — document objective, approach, result, and deviations
 
 The vendor should provide scripted test cases for all risk levels but note which the customer may execute as unscripted per their CSA policy. Reduced documentation burden does not mean untested.
+
+### EU GMP Annex 11 OQ Considerations
+
+For systems subject to EU GMP, OQ test cases must address the following Annex 11 clauses. These supplement — not replace — the FDA Part 11 requirements covered elsewhere in this protocol.
+
+**Clause 5 — Data:** OQ must verify accuracy checks on data entry. Test input validation rules for all GxP-critical fields: boundary values for numeric data fields, format enforcement (date formats, unit-of-measure constraints), rejection of invalid entries with user-visible error messages, and correct handling of mandatory vs. optional fields. Where the FS defines data accuracy checks (e.g., second-person verification, range limits), include explicit OQ test cases for each.
+
+**Clause 9 — Audit Trails:** OQ must verify that audit trail configuration matches the risk-based design documented in the FS. Test cases must confirm: GxP-critical data changes are fully audit trailed (create, modify, delete); audit trail entries capture who (user ID), what (field, old value, new value), when (system-generated timestamp), and why (reason for change, where configured); audit trails cannot be disabled by any user role, including administrators; and audit trail records cannot be modified or deleted. Where the FS defines risk-based audit trail scope (i.e., certain non-GxP fields excluded), verify that the exclusion matches the documented rationale.
+
+**Clause 12 — Security:** OQ must verify logical access controls as defined in the FS. Test cases must cover: role-based access control (RBAC) — each role can access only permitted functions; separation of duties — users cannot perform conflicting actions (e.g., create and approve the same record); session timeout — inactive sessions terminate after the configured duration; and failed login lockout — accounts lock after the configured number of failed attempts, with lockout event logged.
+
+**Clause 14 — Electronic Signature:** OQ must verify e-signature binding per Annex 11 and 21 CFR Part 11. Test cases must confirm: signed records display signer identity, date/time of signature, and meaning of signature (e.g., "Approved," "Reviewed"); signed records cannot be modified without invalidating the signature; and re-signing after modification requires a new signature event with full audit trail.
+
+**Clause 16 — Business Continuity:** OQ must verify system behavior during degraded operations. Test cases should cover: graceful degradation scenarios (e.g., loss of a non-critical integration, reduced network bandwidth) — system continues to function with appropriate user notification; data integrity during failover — no data loss or corruption during switchover to backup systems; and recovery procedures — system restores to a known good state per documented recovery time objectives.
+
+> **Dual-regulation note:** For dual-regulated systems (FDA + EU), ensure OQ test cases cover both Part 11 and Annex 11 requirements. Where requirements diverge (e.g., Annex 11 Clause 9 risk-based audit trails vs. Part 11 11.10(e) comprehensive audit trails), test against the more restrictive requirement.

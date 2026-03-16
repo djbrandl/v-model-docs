@@ -31,6 +31,26 @@ FDA regulation governing electronic records and electronic signatures for predic
 - **Closed System** — An environment in which system access is controlled by persons responsible for the content of electronic records on that system.
 - **Open System** — An environment in which system access is NOT controlled by persons responsible for the content of electronic records. Requires additional controls (encryption, digital signatures).
 
+### The Predicate Rule Concept
+
+Part 11 is one of the most commonly misunderstood FDA regulations. Many vendors incorrectly treat 21 CFR Part 11 as a standalone regulation — it is not. Part 11 applies **only** when existing ("predicate") regulations already require records to be maintained or submitted electronically. Part 11 supplements those predicate rules; it does not create independent requirements.
+
+**What are predicate rules?** Predicate rules are the underlying GxP regulations that govern a customer's operations. Examples:
+
+| Predicate Rule | Scope |
+|----------------|-------|
+| 21 CFR Part 211 | Current Good Manufacturing Practice for finished pharmaceuticals |
+| 21 CFR Part 820 | Quality System Regulation for medical devices |
+| 21 CFR Part 606 | Current Good Manufacturing Practice for blood and blood components |
+| 21 CFR Part 58 | Good Laboratory Practice for nonclinical laboratory studies |
+
+**Why this matters for vendors:**
+
+- The scope of Part 11 compliance depends entirely on which predicate rules apply to the customer's operations. A vendor's system may be subject to different Part 11 requirements depending on the customer's regulatory context.
+- If a predicate rule does not require records to be maintained electronically, Part 11 does not apply to those records — even if the system stores them electronically by choice.
+- Vendors should identify the customer's applicable predicate rules during discovery (URS phase) to correctly scope Part 11 requirements in the FS and DS.
+- Do not make blanket "Part 11 compliant" claims without understanding the predicate rule context. An auditor will ask which predicate rules drive the Part 11 requirements — have the answer ready.
+
 ---
 
 ## ISO/IEC/IEEE 12207 Lifecycle Process Terms
@@ -48,6 +68,29 @@ International standard for software lifecycle processes. Provides the generic V-
 - **Qualification Testing** — Testing to demonstrate the integrated system meets its requirements in the target environment.
 - **Baseline** — A formally approved version of a configuration item, regardless of media, formally designated and fixed at a specific time during the item's lifecycle.
 - **Configuration Item** — An entity within a configuration that satisfies an end-use function and can be uniquely identified at a given reference point.
+
+### ISO 12207 Process-to-V-Model Document Mapping
+
+This table maps ISO/IEC/IEEE 12207 lifecycle processes to the V-model documents produced by this skill. Use this mapping to demonstrate standards alignment in vendor assessments and validation plans.
+
+| ISO 12207 Process | Process Category | V-Model Document(s) | Notes |
+|--------------------|------------------|----------------------|-------|
+| Stakeholder Requirements Definition | Technical | URS | Captures user needs, business requirements, and regulatory requirements from all stakeholders |
+| System/Software Requirements Analysis | Technical | FS | Transforms stakeholder requirements into system-level technical requirements |
+| Architectural Design | Technical | DS | Defines system structure, component interfaces, and technology stack decisions |
+| Implementation | Technical | *Vendor's internal development — outside validation scope* | Vendor SDLC produces the software; validation documents verify the output, not the coding process |
+| Integration | Technical | OQ (integration test cases within OQ) | Integration verification is embedded in OQ test cases that exercise cross-component interactions |
+| Verification | Technical | IQ, OQ | IQ verifies installation against DS; OQ verifies system behavior against FS |
+| Validation | Technical | PQ | PQ confirms the system meets user needs and intended use per the URS |
+| Transition | Technical | IQ (installation verification), Data Migration Protocol | IQ covers deployment to the target environment; data migration protocol covers legacy data transfer |
+| Maintenance | Technical | VP post-go-live section | VP defines the ongoing maintenance, change control, and periodic review strategy |
+| Supply | Agreement | Vendor Assessment | Vendor assessment evaluates the supplier's QMS, development practices, and support capability |
+| Acquisition | Agreement | URS, VP (customer-owned) | Customer-side documents defining what is being acquired and how it will be validated |
+| Risk Management | Technical Management | Risk Assessment | FMEA-based risk assessment drives testing depth and scope across all qualification protocols |
+| Configuration Management | Technical Management | DS Section 9, VP | DS documents configuration baselines; VP defines configuration management procedures for the validation lifecycle |
+| Quality Assurance | Organizational | Vendor Assessment QMS sections, VP | Vendor assessment covers supplier QMS; VP defines quality assurance activities for the validation project |
+| Decision Management | Technical Management | DS ADRs (Architecture Decision Records) | ADRs capture and justify significant design decisions with rationale and alternatives considered |
+| Measurement | Technical Management | Traceability Matrix metrics, VSR | TM provides coverage metrics; VSR summarizes quantitative validation outcomes |
 
 ---
 
@@ -93,7 +136,7 @@ These terms are frequently conflated. The distinction matters for document scopi
 | GMP | Good Manufacturing Practice | Regulations ensuring products are consistently produced and controlled to quality standards |
 | GAMP | Good Automated Manufacturing Practice | ISPE guidelines for validation of computerized systems in pharma. Current: GAMP 5 2nd Ed (2022) |
 | CSV | Computer System Validation | Traditional approach: validate the system through documented evidence of testing. Being superseded by CSA. |
-| CSA | Computer Software Assurance | FDA's risk-based alternative to traditional CSV. Emphasizes critical thinking over scripted testing. Verify the current guidance version and Federal Register citation for your regulatory submission — guidance versions evolve. |
+| CSA | Computer Software Assurance | FDA's risk-based alternative to traditional CSV. Emphasizes critical thinking over scripted testing. **Caveat:** The FDA CSA final guidance publication date should be verified against the Federal Register before citing in regulatory submissions. Dates referenced in this skill (e.g., "September 2025") reflect the status at the time of authoring. Always confirm the current publication status and use the official Federal Register citation — guidance versions evolve and draft dates may shift. |
 | SLC | Software Lifecycle | The full lifecycle of a software product from concept through retirement |
 | SDLC | Software Development Lifecycle | The development portion of the SLC: requirements through release |
 | UAT | User Acceptance Testing | Testing performed by end users to confirm the system meets their requirements |
@@ -102,6 +145,38 @@ These terms are frequently conflated. The distinction matters for document scopi
 | VP | Validation Plan | Document defining the validation strategy, scope, roles, and deliverables |
 | VMP | Validation Master Plan | Corporate-level document governing validation across multiple systems (customer-owned) |
 | VSR | Validation Summary Report | Final document summarizing validation activities, results, and the validation decision |
+
+### International Regulatory Context
+
+This skill focuses on FDA (21 CFR Part 11) and EU GMP (Annex 11) as the two most commonly encountered frameworks for computerized system validation. Vendors serving additional markets should consult local guidance, including:
+
+- **Japan PMDA** — ERES Guidelines (Electronic Records and Electronic Signatures). Japan's equivalent framework for electronic records, closely aligned with Part 11 concepts but with PMDA-specific interpretation.
+- **China NMPA** — GMP Annex on Computerised Systems. China's evolving requirements for computerized systems within pharmaceutical manufacturing.
+- **Brazil ANVISA** — RDC 658/2022 (GMP for medical devices) and related guidance. Brazil's regulatory framework incorporates computerized system requirements within its GMP regulations.
+- **Australia TGA** — PIC/S guidance (aligned with EU GMP Annex 11). Australia adopts PIC/S guidelines, making Annex 11 alignment the practical path for TGA compliance.
+- **WHO** — Technical Report Series on computerised systems. Relevant for vendors supplying to WHO-prequalified manufacturing sites or emerging markets that adopt WHO guidance.
+
+PIC/S (Pharmaceutical Inspection Co-operation Scheme) provides harmonized GMP inspection guidance adopted by 54 participating authorities. Vendors targeting multiple international markets can use PIC/S alignment as a baseline that satisfies most participating regulatory bodies.
+
+The V-model documentation approach in this skill is generally compatible with these frameworks. Adjustments may be needed for jurisdiction-specific requirements — particularly around local language translation, national data residency rules, and market-specific submission formats.
+
+---
+
+## Part 11 vs Annex 11 Divergences
+
+Vendors serving both US and EU customers encounter significant differences between 21 CFR Part 11 and EU GMP Annex 11. These divergences affect system design, documentation, and validation scope.
+
+| Topic | 21 CFR Part 11 | EU GMP Annex 11 | Implication for Vendors |
+|-------|----------------|-----------------|-------------------------|
+| **Periodic evaluation** | No explicit mandate for periodic revalidation. Systems remain in a validated state until a change triggers revalidation. | Clause 11 requires periodic evaluation confirming the system remains in a validated state. | EU customers will expect scheduled periodic reviews. Build reporting and review workflows into the system or documentation. |
+| **Business continuity** | No Part 11 equivalent. Business continuity is addressed by other regulations or left to the organization. | Clause 16 requires arrangements for system breakdown, including manual fallback processes and data recovery. | Vendors must document continuity and recovery procedures for EU-facing deployments. DS and VP should address failure scenarios. |
+| **Audit trails** | 11.10(e) requires audit trails for all electronic record changes. Broad, prescriptive requirement. | Clause 9 takes a risk-based approach. Configuration changes and GxP-critical data require audit trails; not every interaction needs full audit trailing. | Design audit trails to cover all record changes (satisfying Part 11), but allow risk-based configuration of audit trail scope to avoid audit fatigue for EU customers. |
+| **Cloud/hosted systems** | Addressed via the open/closed system framework (11.10 for closed systems, 11.30 for open systems). No cloud-specific provisions. | Clause 3.4 has specific requirements for service providers, including contracts, audits, and data availability guarantees. | Cloud-deployed systems need explicit service provider qualification documentation for EU customers. Include cloud architecture and SLA details in the DS. |
+| **Training** | 11.10(i) requires training for individuals who develop, maintain, or use electronic record/signature systems. | Clause 2 also requires training but scopes it to include education, training, and experience appropriate to the task. Broader competency framing. | Training documentation must cover both technical system training (Part 11) and role-appropriate competency (Annex 11). Vendor training materials should address both angles. |
+| **Risk management** | Does not prescribe a specific risk methodology. Risk-based approaches are endorsed by FDA CSA guidance but not mandated by Part 11 itself. | Clause 1 explicitly requires risk management throughout the computerized system lifecycle. Risk assessment is a formal prerequisite. | Always perform and document risk assessment. For EU customers it is mandatory; for US customers it is best practice and supports CSA alignment. |
+| **Data storage/archival** | 11.10(c) covers protection of records to enable accurate and ready retrieval throughout the retention period. | Clause 7 has specific requirements for damage protection, accessibility, readability, and accuracy checks throughout the retention period. More prescriptive on storage conditions. | Design data archival with Annex 11 Clause 7 as the baseline — it is the more detailed requirement. Address format migration, media integrity, and periodic readability verification. |
+
+> **Note:** Vendors serving both US and EU customers must design for the **more restrictive** requirement in each area, or implement configurable controls that satisfy both frameworks. When in doubt, Annex 11 is generally the more prescriptive framework — designing to Annex 11 requirements typically satisfies Part 11 as well, but not always in reverse.
 
 ---
 

@@ -19,6 +19,7 @@ Guides you through producing a complete V-model documentation package:
 | **Traceability Matrix** | Vendor-owned | Computed from manifest — gap analysis included |
 | **Vendor Assessment** | Vendor-owned | Supplier questionnaire, GAMP classification, release notes |
 | **VSR** | Customer-assist | Vendor evidence summary for customer's Validation Summary Report |
+| **Data Migration Protocol** | Vendor-owned | Migration strategy, verification protocol, ALCOA+ preservation |
 
 ### Key Features
 
@@ -32,12 +33,13 @@ Guides you through producing a complete V-model documentation package:
 
 ### Standards Coverage
 
-- GAMP 5 (2nd Edition, 2022) with CSA alignment
-- 21 CFR Part 11 / EU GMP Annex 11
-- ISO/IEC/IEEE 12207
-- INCOSE requirements writing / NASA forbidden words
-- ISA-18.2 alarm management
-- IEC 62443 (for SCADA/OT systems)
+- **GAMP 5 (2nd Edition, 2022)** — CSV-to-CSA shift, risk-based scaling, per-component categorization, Appendix D7 cloud/SaaS
+- **21 CFR Part 11** — clause-level compliance matrices (11.10(a-k), 11.30 open systems, 11.50, 11.70, 11.100, 11.200, 11.300), predicate rule concept
+- **EU GMP Annex 11** — clause-level coverage (Clauses 1-17), Part 11/Annex 11 divergence guidance for dual-regulated systems
+- **ISO/IEC/IEEE 12207** — process-to-V-model document mapping, terminology alignment
+- **INCOSE requirements writing / NASA forbidden words** — 14 characteristics, 20 forbidden words, IATD verification methods
+- **ISA-18.2 alarm management** — alarm philosophy, rationalization, design requirements, performance KPIs (EEMUA 191), lifecycle coverage
+- **IEC 62443 (SCADA/OT)** — zone/conduit model, security levels SL1-4, OT-specific risk pre-seeds, security architecture verification
 
 ---
 
@@ -191,7 +193,8 @@ v-model-docs/
 │   ├── pq-protocol.md                # Performance Qualification
 │   ├── traceability-matrix.md        # Traceability Matrix
 │   ├── vendor-assessment.md          # Vendor Assessment Package
-│   └── vsr.md                        # Validation Summary Report
+│   ├── vsr.md                        # Validation Summary Report
+│   └── data-migration.md             # Data Migration Validation Protocol
 │
 ├── scripts/                          # Deterministic automation
 │   ├── init_project.py               # Project scaffolding

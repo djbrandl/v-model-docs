@@ -31,7 +31,8 @@ This skill is powered by reference files and scripts in this repository. Before 
 | Traceability Matrix | `@references/traceability-matrix.md` | Running gap analysis or generating the matrix |
 | Vendor Assessment | `@references/vendor-assessment.md` | Generating vendor qualification package |
 | Validation Summary Report | `@references/vsr.md` | Generating vendor evidence summary |
-| Glossary | `@references/glossary.md` | Defining terms or checking terminology |
+| Data Migration Protocol | `@references/data-migration.md` | Generating data migration validation protocol |
+| Glossary | `@references/glossary.md` | Defining terms, checking terminology, Part 11/Annex 11 divergences |
 
 ## Quick Reference
 

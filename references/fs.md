@@ -58,6 +58,79 @@ Entities (CRUD), retention/archival rules, ALCOA+ data integrity attributes, cal
 ### 3.10 Alarm and Exception Handling
 Per alarm: trigger, classification, message, operator response, escalation. Per exception: system behavior on failure. For process environments, align with ISA-18.2: priority levels (emergency/high/medium/low/diagnostic), shelving, suppression, acknowledgment, return-to-normal.
 
+#### 3.10.1 ISA-18.2 Alarm Management Requirements
+
+For systems subject to ISA-18.2, the following subsections apply. Non-process systems may exclude this content via the project manifest (see Override Points).
+
+**Alarm Philosophy Input (ISA-18.2 Section 6):**
+The FS should document the vendor's recommended alarm philosophy inputs for the customer's Alarm Philosophy Document. At minimum:
+- Alarm classification scheme: Emergency, High, Medium, Low, Diagnostic (per ISA-18.2). Each priority level must have a defined response time expectation and escalation path.
+- Alarm type classification: Process alarms (deviation from process setpoint or range), equipment alarms (mechanical or electrical fault conditions), safety alarms (conditions requiring immediate operator action to prevent harm), environmental alarms (emissions, containment, environmental limit violations), system health alarms (communication failures, controller faults, I/O errors).
+- For each alarm type, the FS must specify: which priority levels are applicable, the default notification mechanism (visual, audible, or both), and whether the alarm type is subject to suppression or shelving.
+
+**Alarm Identification and Rationalization (ISA-18.2 Sections 7-8):**
+For each alarm point, the FS must specify or provide a structure that captures:
+- Alarm tag (unique identifier, cross-referenced to P&ID or system tag)
+- Description (plain-language description of the alarm condition)
+- Setpoint (trigger value with engineering units)
+- Deadband (value below/above setpoint required to clear the alarm, preventing chatter)
+- Priority (Emergency/High/Medium/Low/Diagnostic, with justification)
+- Consequence of missing (what happens if the operator does not respond in time)
+- Response time (maximum time the operator has to take corrective action)
+- Corrective action (documented operator response procedure or SOP reference)
+
+Rationalization criteria — the FS should document how each alarm satisfies all four tests:
+1. Is this alarm necessary? (Does the condition require awareness or action?)
+2. Does it require operator action? (If not, it may be a status indicator, not an alarm.)
+3. Is the response time achievable? (Can the operator realistically respond within the required window?)
+4. Is it independent of other alarms? (Or is it a consequential alarm that should be suppressed or grouped?)
+
+The FS must specify the Master Alarm Database (MAD) structure requirements: required fields, approval workflow for alarm additions/changes/deletions, version control, and export format. The MAD is the single source of truth for alarm rationalization and must be maintained throughout the system lifecycle.
+
+**Alarm Design Requirements (ISA-18.2 Section 9):**
+
+*Shelving:*
+- Maximum shelve duration (configurable per site policy, default recommendation, and hard upper limit)
+- Re-notification mechanism (how the system alerts operators when a shelved alarm's shelve timer expires)
+- Audit trail of shelving actions (who shelved, when, duration, reason, alarm tag)
+
+*Suppression:*
+- State-based suppression rules (which alarms are suppressed during which operating states — e.g., startup, shutdown, cleaning, maintenance)
+- Documentation requirements (each suppression rule must be rationalized and recorded in the MAD)
+- Automatic re-enablement (suppressed alarms must automatically re-enable when the triggering state ends; manual suppression overrides must have a maximum duration)
+
+*Flood Management:*
+- Alarm flood definition: >10 alarms per 10 minutes per operator position (per EEMUA 191)
+- Flood suppression strategy: how the system prioritizes and presents alarms during a flood (e.g., show highest priority first, suppress consequential alarms, aggregate related alarms)
+- Post-flood analysis: the system must log flood events for subsequent review and alarm rationalization
+
+*Alarm Grouping and Correlation:*
+- Related alarm consolidation (grouping alarms with a common root cause into a single operator notification with drill-down capability)
+- First-out logic (for trip or interlock events, clearly identifying the initiating alarm vs consequential alarms)
+
+*Return-to-Normal (RTN):*
+- RTN behavior per alarm type (does the alarm clear automatically when the condition returns to normal, or does it require explicit acknowledgment first?)
+- Latched vs unlatched alarms: latched alarms remain active after the condition clears until explicitly acknowledged; unlatched alarms clear automatically. The FS must specify which alarm types use each behavior.
+
+*Acknowledgment:*
+- Acknowledgment requirements per priority level (e.g., Emergency alarms may require acknowledgment within 60 seconds with escalation if unacknowledged)
+- Remote acknowledgment controls (whether alarms can be acknowledged from remote stations, and any restrictions or additional authentication required for remote acknowledgment)
+
+#### 3.10.2 Alarm Performance KPI Specifications
+
+The FS should specify target alarm performance metrics that the system must support measuring. These are KPIs the SYSTEM must be able to MEASURE and REPORT — not the FS's own performance targets.
+
+| KPI | Description | Target (per EEMUA 191 / ISA-18.2) |
+|---|---|---|
+| Average alarm rate | Alarms per operator per 10 minutes during normal operations | ≤1 per EEMUA 191 "manageable" |
+| Peak alarm rate | Maximum alarm rate during upsets, measured per operator position | Defined per site (document threshold) |
+| Standing alarm count | Number of alarms continuously active without operator action | <5 per operator position |
+| Stale alarm identification | Alarms active >24 hours without operator action | System must flag and report |
+| Chattering alarm detection | Alarms with >3 activations in 60 seconds | System must detect and report |
+| Nuisance alarm rate | Percentage of total alarms classified as nuisance after review | System must track for trending |
+
+The system must provide configurable reporting against these KPIs with export capability for periodic alarm management review meetings.
+
 ### 3.11 Security and Access Control
 Roles + permissions (CRUD matrix per function). Authentication method. Session management (timeout, concurrent sessions, lock-out). Electronic signature triggers per 21 CFR Part 11. Audit trail access restrictions.
 
@@ -69,6 +142,44 @@ Response time thresholds (operation + data volume + latency). Throughput. Concur
 
 ### 3.14 Regulatory Requirements
 Specific regulations imposing system behaviors. 21 CFR Part 11 and EU GMP Annex 11 compliance matrices (if applicable). ALCOA+ mapping.
+
+#### 3.14.1 EU GMP Annex 11 Functional Considerations
+
+For systems subject to EU GMP Annex 11, the FS must address the following clauses with specific functional requirements. These complement the 21 CFR Part 11 requirements elsewhere in this document. For dual-regulated systems, the FS must address both frameworks. Where they diverge (see glossary: Part 11 vs Annex 11 Divergences), design for the more restrictive requirement.
+
+**Clause 5 — Data (Accuracy Checks on Manual Data Entry):**
+The FS must specify accuracy checks on manual data entry for all GxP-critical input fields:
+- Input validation rules: field-level format validation (e.g., date format, numeric range, enumerated values), cross-field validation (e.g., expiry date must be after manufacturing date), and business rule validation (e.g., batch size within product specification range).
+- Double-entry requirements where applicable: identify which data elements require independent dual entry with comparison (e.g., analytical results, critical process parameters, material quantities). Specify system behavior on mismatch (reject, flag for review, require third verification).
+- Range checks: for numeric fields, specify acceptable ranges with engineering units. The system must reject or flag out-of-range entries with a clear error message identifying the violated constraint.
+- Format validation: specify acceptable input formats, character sets, and maximum lengths. The system must prevent entry of data that does not conform to the defined format.
+
+**Clause 9 — Audit Trails:**
+The FS must define which data elements require audit trailing and at what granularity. Apply a risk-based approach:
+- GxP-critical data (e.g., batch records, test results, release decisions): full CRUD audit trails capturing who, what, when, old value, new value, and reason for change.
+- Operational data (e.g., equipment schedules, resource assignments): change-only audit trails capturing modifications and deletions with user, timestamp, and old/new values.
+- Reference data (e.g., product specifications, method parameters, user role assignments): approval audit trails capturing change requests, approvals, and effective dates.
+
+For each audit trail category, the FS must specify: retention period (aligned with data retention policy), search and filter capabilities, export format, and access restrictions (who can view, who cannot modify).
+
+**Clause 10 — Change and Configuration Management:**
+The FS must specify how the system handles configuration changes:
+- Version control of configurations: every configuration change must be versioned, with the ability to retrieve and compare any previous version.
+- Approval workflows for configuration changes: specify which configuration categories require formal approval before activation (e.g., calculation parameters, alarm setpoints, user roles) vs which are effective immediately (e.g., display preferences, report formatting).
+- Rollback capabilities: the system must support reverting to a previous configuration version with audit trail documentation of the rollback action, the user who initiated it, and the reason.
+
+**Clause 13 — Incident Management:**
+The FS must specify error handling, logging, and incident reporting capabilities:
+- System error classification: define error severity levels (e.g., critical/major/minor/informational) and the system behavior for each level (e.g., critical errors halt processing and notify administrators; minor errors log and continue).
+- Notification mechanisms: specify how errors and incidents are communicated to users and administrators (on-screen alerts, email notifications, SMS, integration with incident management systems).
+- Escalation rules: define time-based and severity-based escalation paths (e.g., critical errors unacknowledged after 15 minutes escalate to site management).
+
+**Clause 16 — Business Continuity:**
+The FS must specify system behavior during degraded operations:
+- Graceful degradation: define which functions remain available when dependent systems or components are unavailable (e.g., if the historian is offline, the system continues batch execution and buffers data locally).
+- Data buffering during outages: specify how the system handles data that cannot be transmitted to its destination (buffer size, buffer persistence, overflow behavior, data integrity during buffering).
+- Recovery procedures: define the system's behavior when normal operations resume (automatic reconnection, data synchronization sequence, conflict resolution rules).
+- Data reconciliation after restoration: specify how buffered data is reconciled with the target system (chronological replay, duplicate detection, integrity verification, reconciliation report generation).
 
 ### 3.15 Traceability Matrix
 Forward trace (URS -> FS) and backward trace (FS -> URS). Flag gaps (URS with no FS decomposition) and orphans (FS with no URS parent).
@@ -316,6 +427,12 @@ Each requirement is independently testable. FS-032 is verified by submitting a b
 - "This requirement names a specific technology. Apply the Swap Test — move to DS if it fails."
 - "The alarm section has no priorities. Classify each per ISA-18.2 (emergency/high/medium/low/diagnostic)."
 - "This screen has 15 fields but no validation rules. For each input: type, range, mandatory/optional, error message."
+
+### For the Author — Alarm Management (ISA-18.2)
+- "Does each alarm require a documented operator action? If not, it may be a status indicator, not an alarm."
+- "Is the alarm rate achievable? EEMUA 191 defines >1 alarm/min as 'overloaded'. Most ISA-18.2-compliant systems target ≤1 alarm/10min under normal operations."
+- "Are there state-based suppression rules? Alarms that are valid during one operating state but nuisance during another need state-based logic."
+- "Is there a Master Alarm Database requirement? The MAD is the single source of truth for alarm rationalization."
 
 ### For the Reviewer
 - "Flag any requirement containing Forbidden Language (Section 9)."

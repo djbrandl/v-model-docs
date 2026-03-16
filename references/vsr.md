@@ -123,6 +123,34 @@ Name / Title / Date
 
 Full table with columns: #, Document Title, Doc ID, Version, Date, Status, File Reference. Include every vendor deliverable plus this evidence summary itself. The file reference column uses exact delivered filenames so the customer's document control team can cross-check.
 
+### 3.8 Annex 11 Compliance Summary
+
+**Purpose:** For EU GMP-regulated customers, the VSR must demonstrate that the validation lifecycle addressed all applicable Annex 11 clauses. The vendor evidence summary should include a clause-by-clause summary of how each Annex 11 requirement was addressed.
+
+**Annex 11 Clause Coverage Table:**
+
+| Annex 11 Clause | Addressed By | Evidence Location | Status |
+|---|---|---|---|
+| 1. Risk Management | Risk Assessment | [doc reference] | Complete / Partial / Open |
+| 2. Personnel | VP Roles & Responsibilities | [doc reference] | — |
+| 3. Supplier | Vendor Assessment | [doc reference] | — |
+| 4. Validation | VP, IQ, OQ, PQ protocols | [doc references] | — |
+| 5. Data | FS data validation rules, OQ test cases | [doc references] | — |
+| 7. Data Storage | DS data design, IQ backup verification | [doc references] | — |
+| 8. Printouts | FS print functionality, OQ test cases | [doc references] | — |
+| 9. Audit Trails | FS audit trail spec, DS audit design, OQ verification | [doc references] | — |
+| 10. Change/Config Mgmt | DS config management, VP change control | [doc references] | — |
+| 11. Periodic Evaluation | VP periodic review section | [doc reference] | — |
+| 12. Security | DS security design, IQ security verification | [doc references] | — |
+| 13. Incident Management | FS error handling, DS logging design | [doc references] | — |
+| 14. Electronic Signature | DS e-signature design, OQ verification | [doc references] | — |
+| 16. Business Continuity | DS reliability design, IQ DR verification | [doc references] | — |
+| 17. Archiving | DS data design, archive verification | [doc references] | — |
+
+> **Coaching:** "For EU-regulated customers, the Annex 11 clause coverage table is a powerful audit artifact. An auditor can quickly verify that every clause has been addressed. Incomplete rows should be flagged as open items in the VSR Outstanding Items section."
+
+> **Note:** This table supplements the Part 11 compliance evidence already required. For dual-regulated systems, both the Part 11 and Annex 11 compliance summaries should appear in the VSR.
+
 ---
 
 ## 4. What the Vendor Does NOT Include

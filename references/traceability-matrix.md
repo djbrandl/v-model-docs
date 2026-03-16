@@ -25,6 +25,12 @@ The RTM grows with each document added to the project. It should be regenerated 
 
 The matrix is useful at every stage, not only when the full package is complete. Early generation surfaces gaps when they are cheap to fix.
 
+### Integration Testing in the Trace Chain
+
+Integration testing verifies that components work together correctly. In the V-model, integration test cases are typically included within the OQ protocol (testing FS requirements that span multiple components). For ISO/IEC/IEEE 12207 alignment, integration is a named technical process. The traceability matrix should include integration test case IDs (prefixed OQ-INT-) to explicitly trace FS integration requirements through to verification.
+
+> **Note:** OQ includes both functional and integration test coverage. Functional OQ test cases (OQ-nnn) verify individual FS requirements; integration OQ test cases (OQ-INT-nnn) verify FS requirements that span multiple components or interfaces. Both types appear in the traceability matrix under the OQ column. Separating the prefix makes it visible to auditors which requirements were verified through integration testing versus isolated functional testing.
+
 ---
 
 ## 3. Matrix Format
@@ -44,7 +50,9 @@ When a URS requirement traces to multiple FS items, the row expands. The matrix 
 
 ## 4. Four Traceability Link Types
 
-Traceability is bidirectional. GAMP 5 and IEEE 830 both distinguish four link directions:
+Traceability is bidirectional. GAMP 5 and IEEE 830 (superseded by ISO/IEC/IEEE 29148:2018) both distinguish four link directions:
+
+> **Note on IEEE 830:** IEEE 830 (IEEE Recommended Practice for Software Requirements Specifications) was superseded by ISO/IEC/IEEE 29148:2018 (Systems and software engineering — Life cycle processes — Requirements engineering). While IEEE 830 remains widely referenced in pharma validation, new projects should reference ISO/IEC/IEEE 29148.
 
 ### Forward-to (Decomposition)
 Traces a requirement **down** into its implementing specification. URS-001 forward-traces to FS-003. This answers: "How is this requirement addressed?"
