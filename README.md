@@ -57,11 +57,7 @@ Guides you through producing a complete V-model documentation package:
 
 **Option A — Install as a skill (recommended):**
 
-```bash
-claude skill add /path/to/v-model-docs
-```
-
-Or add to your project's `.claude/skills/` directory:
+Copy the entire repo into your project's `.claude/skills/` directory:
 
 ```bash
 # From your project root
