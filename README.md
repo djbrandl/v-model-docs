@@ -57,11 +57,9 @@ Guides you through producing a complete V-model documentation package:
 
 **Option A — Install as a skill (recommended):**
 
-Copy the entire repo into your project's `.claude/skills/` directory:
-
 ```bash
 # From your project root
-cp -r /path/to/v-model-docs .claude/skills/v-model-docs
+git clone https://github.com/djbrandl/v-model-docs.git .claude/skills/v-model-docs
 ```
 
 **Option B — Reference directly:**
